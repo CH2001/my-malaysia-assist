@@ -1,7 +1,12 @@
 import { ChatInterface } from '@/components/ChatInterface';
+import { SettingsModal } from '@/components/SettingsModal';
+import { Button } from '@/components/ui/button';
+import { Settings } from 'lucide-react';
+import { useState } from 'react';
 import logo from "@/assets/mycity-logo.png";
 
 const Index = () => {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/10">
       <header className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-background/80 backdrop-blur-sm">
@@ -14,10 +19,23 @@ const Index = () => {
             <p className="text-xs text-muted-foreground">Pembantu Digital Warganegara Malaysia</p>
           </div>
         </div>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => setIsSettingsOpen(true)}
+          className="hover:bg-secondary"
+        >
+          <Settings className="h-5 w-5" />
+        </Button>
       </header>
       <div className="h-[calc(100vh-80px)]">
         <ChatInterface />
       </div>
+      
+      <SettingsModal 
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </div>
   );
 };

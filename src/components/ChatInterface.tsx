@@ -27,7 +27,6 @@ export const ChatInterface = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -237,16 +236,6 @@ export const ChatInterface = () => {
       {/* Input Area */}
       <div className="p-4 border-t bg-card">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-end mb-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setIsSettingsOpen(true)}
-              className="hover:bg-secondary"
-            >
-              <Settings className="h-5 w-5" />
-            </Button>
-          </div>
           <div className="flex space-x-2">
             <div className="flex-1 relative">
               <Textarea
@@ -274,11 +263,6 @@ export const ChatInterface = () => {
           </div>
         </div>
       </div>
-
-      <SettingsModal 
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
     </div>
   );
 };
