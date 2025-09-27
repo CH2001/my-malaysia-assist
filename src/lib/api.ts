@@ -39,8 +39,9 @@ const API_BASE_URL = 'http://localhost:8000';
 export class MyCityAPI {
   private apiKey: string;
 
-  constructor(apiKey: string) {
-    this.apiKey = apiKey;
+  constructor(apiKey?: string) {
+    // Use hardcoded Cerebras API key
+    this.apiKey = apiKey || 'csk-2mjjejn5kn9nd443hc3xc4djccv45rxk9jt2phf5pjem2nyr';
   }
 
   /**

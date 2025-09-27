@@ -75,10 +75,8 @@ export const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      // Try Lambda API first
-      const apiKey = localStorage.getItem('cerebras_api_key');
-      if (apiKey) {
-        const api = new MyCityAPI(apiKey);
+      // Use hardcoded API key - always try Lambda API
+      const api = new MyCityAPI();
         const response = await api.sendChatMessage(currentInput);
         
         const assistantMessage: Message = {
@@ -98,25 +96,8 @@ export const ChatInterface = () => {
         };
 
         setMessages(prev => [...prev, assistantMessage]);
-        if (assistantMessage.callToActions) {
-          setCallToActions(assistantMessage.callToActions);
-        }
-      } else {
-        // Fallback to local response generation
-        const response = generateResponse(currentInput);
-        const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: response.content,
-          sender: 'assistant',
-          timestamp: new Date(),
-          type: response.type,
-          callToActions: response.callToActions,
-        };
-
-        setMessages(prev => [...prev, assistantMessage]);
-        if (response.callToActions) {
-          setCallToActions(response.callToActions);
-        }
+      if (assistantMessage.callToActions) {
+        setCallToActions(assistantMessage.callToActions);
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -341,9 +322,8 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
   const handleSuggestionClick = async (suggestion: string) => {
     setInputValue(suggestion);
     
-    // Auto-send suggestion to Lambda API if available
-    const apiKey = localStorage.getItem('cerebras_api_key');
-    if (apiKey) {
+    // Auto-send suggestion to Lambda API
+    try {
       const userMessage: Message = {
         id: Date.now().toString(),
         content: suggestion,
@@ -355,8 +335,7 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
       setInputValue('');
       setIsLoading(true);
 
-      try {
-        const api = new MyCityAPI(apiKey);
+      const api = new MyCityAPI();
         const response = await api.sendChatMessage(suggestion);
         
         const assistantMessage: Message = {
@@ -376,44 +355,39 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
         };
 
         setMessages(prev => [...prev, assistantMessage]);
-        if (assistantMessage.callToActions) {
-          setCallToActions(assistantMessage.callToActions);
-        }
-      } catch (error) {
-        console.error('Error sending suggestion:', error);
-        // Fallback to local response
-        const response = generateResponse(suggestion);
-        const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: response.content,
-          sender: 'assistant',
-          timestamp: new Date(),
-          type: response.type,
-          callToActions: response.callToActions,
-        };
-
-        setMessages(prev => [...prev, assistantMessage]);
-        if (response.callToActions) {
-          setCallToActions(response.callToActions);
-        }
-      } finally {
-        setIsLoading(false);
+      if (assistantMessage.callToActions) {
+        setCallToActions(assistantMessage.callToActions);
       }
-    } else {
-      // No API key, use local response
-      handleSendMessage();
+    } catch (error) {
+      console.error('Error sending suggestion:', error);
+      // Fallback to local response
+      const response = generateResponse(suggestion);
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: response.content,
+        sender: 'assistant',
+        timestamp: new Date(),
+        type: response.type,
+        callToActions: response.callToActions,
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+      if (response.callToActions) {
+        setCallToActions(response.callToActions);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleVoiceInput = async (transcript: string) => {
     setInputValue(transcript);
     
-    // Auto-send voice transcript to Lambda API if API key is available
-    const apiKey = localStorage.getItem('cerebras_api_key');
-    if (apiKey && transcript.trim()) {
+    // Auto-send voice transcript to Lambda API
+    if (transcript.trim()) {
       try {
         setIsLoading(true);
-        const api = new MyCityAPI(apiKey);
+        const api = new MyCityAPI();
         
         const userMessage: Message = {
           id: Date.now().toString(),
@@ -454,7 +428,7 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
         setIsLoading(false);
       }
     } else {
-      // If no API key, just put transcript in input field
+      // Just put transcript in input field if empty
       textareaRef.current?.focus();
     }
   };
@@ -508,6 +482,15 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
             >
               <FileTextIcon className="h-4 w-4 mr-2" />
               Renew Dokumen
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleSuggestionClick("What are the best cafes to work in Cyberjaya?")}
+              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300"
+            >
+              <Bot className="h-4 w-4 mr-2" />
+              Best Cyberjaya Cafe
             </Button>
           </div>
         </div>
