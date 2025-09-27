@@ -332,9 +332,8 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
                             if (linkMatch) {
                               const [, linkText, linkUrl] = linkMatch;
                               return (
-                                <Card key={index} className="mt-3 p-3 bg-cyan-500/10 border-cyan-400/40">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-cyan-300 font-medium text-sm">Rujukan:</span>
+                                <Card key={index} className="mt-3 mb-4 p-3 bg-cyan-500/10 border-cyan-400/40">
+                                  <div className="flex items-center justify-center">
                                     <Button
                                       size="sm"
                                       variant="outline"
