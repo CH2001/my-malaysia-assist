@@ -53,10 +53,10 @@ const Analytics = () => {
   const hoveredData = hoveredDistrict ? districtData.find(d => d.id === hoveredDistrict) : null;
 
   return (
-    <div className="min-h-screen p-6" style={{ background: 'var(--gradient-analytics)' }}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen" style={{ background: 'var(--gradient-analytics)' }}>
+      {/* Navigation Header */}
+      <header className="bg-background/95 backdrop-blur-sm border-b border-border px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Analytics Dashboard</h1>
             <p className="text-muted-foreground">Analisis aduan dan carian warganegara Cyberjaya</p>
@@ -65,6 +65,9 @@ const Analytics = () => {
             Kembali ke Utama
           </Button>
         </div>
+      </header>
+      
+      <div className="max-w-7xl mx-auto space-y-6 p-6">
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
