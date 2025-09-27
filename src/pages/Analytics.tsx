@@ -108,7 +108,7 @@ const Analytics = () => {
   const getDistrictColor = (issues: number) => {
     if (issues > 40) return 'hsl(var(--destructive))';
     if (issues > 25) return 'hsl(var(--primary))';
-    return 'hsl(210, 15%, 25%)'; // Darker grey for low issues
+    return 'hsl(142, 76%, 36%)'; // Green for low issues
   };
 
   const hoveredData = hoveredDistrict ? districtData.find(d => d.id === hoveredDistrict) : null;
@@ -295,7 +295,7 @@ const Analytics = () => {
               <p className="text-sm text-cyan-200">Hover pada daerah untuk maklumat lanjut</p>
             </CardHeader>
             <CardContent>
-              <div className="relative">
+              <div className="relative overflow-visible">
                 <svg viewBox="0 0 400 300" className="w-full h-48 md:h-64 border rounded-lg">
                   {/* Simplified Cyberjaya districts */}
                   <path
@@ -307,7 +307,7 @@ const Analytics = () => {
                     onMouseEnter={() => setHoveredDistrict('cyberjaya-central')}
                     onMouseLeave={() => setHoveredDistrict(null)}
                   />
-                  <text x="100" y="85" textAnchor="middle" className="fill-white text-xs font-medium">
+                  <text x="100" y="85" textAnchor="middle" className="fill-white text-xs font-medium pointer-events-none">
                     Central
                   </text>
 
@@ -320,7 +320,7 @@ const Analytics = () => {
                     onMouseEnter={() => setHoveredDistrict('cybersouth')}
                     onMouseLeave={() => setHoveredDistrict(null)}
                   />
-                  <text x="220" y="85" textAnchor="middle" className="fill-white text-xs font-medium">
+                  <text x="220" y="85" textAnchor="middle" className="fill-white text-xs font-medium pointer-events-none">
                     Cybersouth
                   </text>
 
@@ -333,7 +333,7 @@ const Analytics = () => {
                     onMouseEnter={() => setHoveredDistrict('cyberjaya-north')}
                     onMouseLeave={() => setHoveredDistrict(null)}
                   />
-                  <text x="100" y="165" textAnchor="middle" className="fill-white text-xs font-medium">
+                  <text x="100" y="165" textAnchor="middle" className="fill-white text-xs font-medium pointer-events-none">
                     North
                   </text>
 
@@ -346,7 +346,7 @@ const Analytics = () => {
                     onMouseEnter={() => setHoveredDistrict('cyberjaya-west')}
                     onMouseLeave={() => setHoveredDistrict(null)}
                   />
-                  <text x="220" y="165" textAnchor="middle" className="fill-white text-xs font-medium">
+                  <text x="220" y="165" textAnchor="middle" className="fill-white text-xs font-medium pointer-events-none">
                     West
                   </text>
 
@@ -359,14 +359,14 @@ const Analytics = () => {
                     onMouseEnter={() => setHoveredDistrict('cyberjaya-east')}
                     onMouseLeave={() => setHoveredDistrict(null)}
                   />
-                  <text x="320" y="115" textAnchor="middle" className="fill-white text-xs font-medium">
+                  <text x="320" y="115" textAnchor="middle" className="fill-white text-xs font-medium pointer-events-none">
                     East
                   </text>
                 </svg>
 
                 {/* Hover Details */}
                 {hoveredData && (
-                  <div className="absolute top-4 right-4 bg-black/90 backdrop-blur-sm p-4 rounded-lg shadow-xl border border-cyan-400/30 max-w-xs z-10">
+                  <div className="absolute top-2 right-2 bg-black/95 backdrop-blur-sm p-4 rounded-lg shadow-2xl border border-cyan-400/30 max-w-xs z-50 min-w-[280px]">
                     <h4 className="font-semibold text-white text-lg mb-2">{hoveredData.name}</h4>
                     <p className="text-sm text-cyan-200 mb-2">{hoveredData.issues} isu aktif</p>
                     <p className="text-sm text-white mb-3">Isu popular: <span className="font-medium text-cyan-300">{hoveredData.popular}</span></p>
@@ -375,10 +375,10 @@ const Analytics = () => {
                       <ul className="space-y-1">
                         {hoveredData.topTrends.map((trend, index) => (
                           <li key={index} className="text-xs text-white flex items-center">
-                            <span className="w-4 h-4 rounded-full bg-cyan-500 text-black text-[10px] flex items-center justify-center mr-2 font-bold">
+                            <span className="w-4 h-4 rounded-full bg-cyan-500 text-black text-[10px] flex items-center justify-center mr-2 font-bold flex-shrink-0">
                               {index + 1}
                             </span>
-                            {trend}
+                            <span className="leading-tight">{trend}</span>
                           </li>
                         ))}
                       </ul>
@@ -387,7 +387,7 @@ const Analytics = () => {
                 )}
 
                 {/* Legend */}
-                <div className="mt-4 flex items-center space-x-4 text-sm text-white">
+                <div className="mt-4 flex items-center space-x-4 text-sm text-white flex-wrap gap-2">
                   <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 rounded" style={{ backgroundColor: 'hsl(var(--destructive))' }}></div>
                     <span>Tinggi (40+)</span>
@@ -397,7 +397,7 @@ const Analytics = () => {
                     <span>Sederhana (25-40)</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded" style={{ backgroundColor: 'hsl(210, 15%, 25%)' }}></div>
+                    <div className="w-4 h-4 rounded" style={{ backgroundColor: 'hsl(142, 76%, 36%)' }}></div>
                     <span>Rendah (&lt;25)</span>
                   </div>
                 </div>
