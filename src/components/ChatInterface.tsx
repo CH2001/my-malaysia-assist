@@ -454,46 +454,6 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
             Saya boleh membantu anda dengan perkhidmatan kerajaan Malaysia, pelan perjalanan, dan soalan am mengenai khidmat awam.
           </p>
           
-          {/* Suggestion Buttons */}
-          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 max-w-4xl mx-auto px-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleSuggestionClick("Cari hospital terdekat")}
-              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300 text-xs md:text-sm"
-            >
-              <Hospital className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-              <span className="truncate">Cari Hospital</span>
-            </Button>
-            <Button
-              variant="outline" 
-              size="sm"
-              onClick={() => handleSuggestionClick("Jalan ke KLCC dari KL Sentral")}
-              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300 text-xs md:text-sm"
-            >
-              <MapIcon className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-              <span className="truncate">Panduan Jalan</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm" 
-              onClick={() => handleSuggestionClick("Bagaimana nak renew pasport?")}
-              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300 text-xs md:text-sm"
-            >
-              <FileTextIcon className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-              <span className="truncate">Renew Dokumen</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleSuggestionClick("What are the best cafes to work in Cyberjaya?")}
-              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300 text-xs md:text-sm"
-            >
-              <Bot className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-              <span className="truncate">Best Cyberjaya Cafe</span>
-            </Button>
-          </div>
-
           {/* Suggestion Buttons - Only show when no messages */}
           {messages.length === 0 && (
             <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 max-w-4xl mx-auto px-4 relative z-10">
@@ -687,7 +647,7 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
       </div>
 
       {/* Call to Action Sidebar */}
-      <div className="w-80 border-l border-cyan-400/20 bg-black/20 backdrop-blur-sm">
+      <div className="w-80 xl:w-96 border-l border-cyan-400/20 bg-black/20 backdrop-blur-sm">
         <div className="p-4">
           <h3 className="text-white font-semibold mb-4 flex items-center">
             <FileText className="h-5 w-5 mr-2 text-cyan-400" />
@@ -697,18 +657,18 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
             <div className="space-y-3">
               {callToActions.length > 0 ? (
                 callToActions.map((action) => (
-                  <Card key={action.id} className="glass bg-white/10 border-cyan-400/30 p-4 hover:bg-white/15 transition-all duration-300">
+                  <Card key={action.id} className="glass bg-white/10 border-cyan-400/30 p-3 hover:bg-white/15 transition-all duration-300">
                     <div className="space-y-3">
-                      <div>
-                        <h4 className="text-white font-medium text-sm">{action.title}</h4>
-                        <p className="text-white/70 text-xs mt-1">{action.description}</p>
+                      <div className="min-h-0">
+                        <h4 className="text-white font-medium text-sm leading-tight break-words">{action.title}</h4>
+                        <p className="text-white/70 text-xs mt-1 leading-relaxed break-words">{action.description}</p>
                       </div>
                       <Button
                         size="sm"
-                        className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 border border-cyan-400/40 text-white text-xs"
+                        className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 border border-cyan-400/40 text-white text-xs px-2 py-2 break-words"
                         onClick={() => window.open(action.link, '_blank')}
                       >
-                        {action.buttonText}
+                        <span className="break-words whitespace-normal text-center">{action.buttonText}</span>
                       </Button>
                     </div>
                   </Card>
