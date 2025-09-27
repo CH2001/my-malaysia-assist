@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Settings, Send, Mic, MicOff, MapPin, FileText } from 'lucide-react';
 import { SettingsModal } from './SettingsModal';
 import { VoiceInput } from './VoiceInput';
+import { SiriMascot } from './SiriMascot';
 import { toast } from '@/hooks/use-toast';
 
 interface Message {
@@ -167,7 +168,22 @@ export const ChatInterface = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full relative">
+      {/* Siri Mascot - centered vertically when no messages */}
+      {messages.length <= 1 && (
+        <div className="absolute inset-0 flex items-center justify-center z-10">
+          <div className="text-center">
+            <SiriMascot isActive={isLoading || isListening} size="large" />
+            <p className="mt-6 text-white text-lg font-medium max-w-md mx-auto">
+              Selamat datang ke MyCity AI Assistant
+            </p>
+            <p className="mt-2 text-white/70 text-sm max-w-lg mx-auto">
+              Saya boleh membantu anda dengan perkhidmatan kerajaan Malaysia, pelan perjalanan, dan soalan am mengenai khidmat awam.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Messages */}
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4 max-w-4xl mx-auto">
@@ -176,16 +192,16 @@ export const ChatInterface = () => {
               key={message.id}
               className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <Card className={`max-w-[80%] p-4 ${
+              <Card className={`max-w-[80%] p-4 glass border-cyan-400/30 ${
                 message.sender === 'user' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-card border'
+                  ? 'bg-gradient-to-r from-cyan-500/20 to-cyan-600/20 text-white border-cyan-300/40' 
+                  : 'bg-white/10 text-white border-white/20'
               }`}>
                 <div className="flex items-start space-x-2">
                   {message.sender === 'assistant' && (
                     <div className="mt-1">
-                      {message.type === 'journey' && <MapPin className="h-4 w-4 text-accent" />}
-                      {message.type === 'process' && <FileText className="h-4 w-4 text-success" />}
+                      {message.type === 'journey' && <MapPin className="h-4 w-4 text-cyan-400" />}
+                      {message.type === 'process' && <FileText className="h-4 w-4 text-cyan-300" />}
                     </div>
                   )}
                   <div className="flex-1">
@@ -193,8 +209,8 @@ export const ChatInterface = () => {
                       {message.content.split('\n').map((line, index) => (
                         <p key={index} className={`${
                           message.sender === 'user' 
-                            ? 'text-primary-foreground' 
-                            : 'text-card-foreground'
+                            ? 'text-white' 
+                            : 'text-white'
                         } ${index === 0 ? 'mt-0' : ''}`}>
                           {line}
                         </p>
@@ -202,8 +218,8 @@ export const ChatInterface = () => {
                     </div>
                     <p className={`text-xs mt-2 ${
                       message.sender === 'user' 
-                        ? 'text-primary-foreground/70' 
-                        : 'text-muted-foreground'
+                        ? 'text-white/70' 
+                        : 'text-white/60'
                     }`}>
                       {message.timestamp.toLocaleTimeString('ms-MY', { 
                         hour: '2-digit', 
@@ -217,14 +233,14 @@ export const ChatInterface = () => {
           ))}
           {isLoading && (
             <div className="flex justify-start">
-              <Card className="bg-card p-4">
+              <Card className="glass bg-white/10 p-4 border-cyan-400/20">
                 <div className="flex items-center space-x-2">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
-                  <span className="text-sm text-muted-foreground">Sedang berfikir...</span>
+                  <span className="text-sm text-white/70">Sedang berfikir...</span>
                 </div>
               </Card>
             </div>
@@ -233,10 +249,10 @@ export const ChatInterface = () => {
         </div>
       </ScrollArea>
 
-      {/* Input Area */}
-      <div className="p-4 border-t bg-card">
+      {/* Input Area with glassmorphism */}
+      <div className="p-4 glass border-t border-cyan-400/20">
         <div className="max-w-4xl mx-auto">
-          <div className="flex space-x-2">
+          <div className="flex space-x-3 items-end">
             <div className="flex-1 relative">
               <Textarea
                 ref={textareaRef}
@@ -244,21 +260,29 @@ export const ChatInterface = () => {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Tanya saya tentang perkhidmatan kerajaan atau panduan perjalanan..."
-                className="min-h-[60px] max-h-32 resize-none pr-12"
+                className="min-h-[60px] max-h-32 resize-none pr-16 bg-white/10 border-cyan-400/30 text-white placeholder:text-white/50 focus:border-cyan-300/60 focus:ring-cyan-400/20"
                 disabled={isLoading}
               />
-              <VoiceInput 
-                onTranscript={handleVoiceInput}
-                isListening={isListening}
-                setIsListening={setIsListening}
-              />
+              {/* Enhanced Voice Input Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`absolute right-2 top-2 w-12 h-12 ${
+                  isListening 
+                    ? 'text-red-400 hover:bg-red-500/20 border border-red-400/40 cyan-glow' 
+                    : 'text-cyan-400 hover:bg-cyan-500/20 border border-cyan-400/30'
+                } transition-all duration-300`}
+                onClick={() => setIsListening(!isListening)}
+              >
+                {isListening ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+              </Button>
             </div>
             <Button 
               onClick={handleSendMessage}
               disabled={!inputValue.trim() || isLoading}
-              className="self-end px-6"
+              className="px-6 h-12 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 border border-cyan-400/40 text-white disabled:opacity-50 cyan-glow"
             >
-              <Send className="h-4 w-4" />
+              <Send className="h-5 w-5" />
             </Button>
           </div>
         </div>

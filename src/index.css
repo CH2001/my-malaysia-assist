@@ -47,11 +47,24 @@ All colors MUST be HSL.
     --malaysia-blue: 220 85% 25%;
     --malaysia-yellow: 45 95% 60%;
     
+    /* Sophisticated light blue theme */
+    --cyan-primary: 190 100% 60%;
+    --cyan-secondary: 190 80% 70%;
+    --cyan-glow: 190 100% 50%;
+    --cyan-muted: 190 30% 85%;
+    
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--warning)));
+    --gradient-cyan: linear-gradient(135deg, hsl(var(--cyan-primary)), hsl(var(--cyan-secondary)));
     --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.15);
     --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.2);
+    --shadow-cyan: 0 0 30px hsl(var(--cyan-glow) / 0.3);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Glassmorphism effects */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-backdrop: blur(20px);
 
     --radius: 0.5rem;
 
@@ -118,5 +131,47 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-backdrop);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+  }
+  
+  .cyan-glow {
+    box-shadow: var(--shadow-cyan);
+  }
+  
+  .siri-orb {
+    background: radial-gradient(circle, hsl(var(--cyan-primary) / 0.8), hsl(var(--cyan-secondary) / 0.4));
+    animation: siri-pulse 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes siri-pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 hsl(var(--cyan-glow) / 0.7);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 20px hsl(var(--cyan-glow) / 0.2);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 40px hsl(var(--cyan-glow) / 0);
+    }
+  }
+  
+  @keyframes siri-wave {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
   }
 }
