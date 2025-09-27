@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, Send, Mic, MicOff, MapPin, FileText } from 'lucide-react';
+import { Settings, Send, Mic, MicOff, MapPin, FileText, Bot, User } from 'lucide-react';
 import { SettingsModal } from './SettingsModal';
 import { VoiceInput } from './VoiceInput';
 import { SiriMascot } from './SiriMascot';
@@ -169,20 +169,16 @@ export const ChatInterface = () => {
 
   return (
     <div className="flex flex-col h-full relative">
-      {/* Siri Mascot - centered vertically when no messages */}
-      {messages.length <= 1 && (
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="text-center">
-            <SiriMascot isActive={isLoading || isListening} size="large" />
-            <p className="mt-6 text-white text-lg font-medium max-w-md mx-auto">
-              Selamat datang ke MyCity AI Assistant
-            </p>
-            <p className="mt-2 text-white/70 text-sm max-w-lg mx-auto">
-              Saya boleh membantu anda dengan perkhidmatan kerajaan Malaysia, pelan perjalanan, dan soalan am mengenai khidmat awam.
-            </p>
-          </div>
-        </div>
-      )}
+      {/* Siri Mascot and Welcome Message at the top */}
+      <div className="flex-shrink-0 p-6 text-center">
+        <SiriMascot isActive={isLoading || isListening} size="large" />
+        <p className="mt-4 text-white text-lg font-medium max-w-md mx-auto">
+          Selamat datang ke MyCity AI Assistant
+        </p>
+        <p className="mt-2 text-white/70 text-sm max-w-lg mx-auto">
+          Saya boleh membantu anda dengan perkhidmatan kerajaan Malaysia, pelan perjalanan, dan soalan am mengenai khidmat awam.
+        </p>
+      </div>
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-4">
@@ -197,9 +193,20 @@ export const ChatInterface = () => {
                   ? 'bg-gradient-to-r from-cyan-500/20 to-cyan-600/20 text-white border-cyan-300/40' 
                   : 'bg-white/10 text-white border-white/20'
               }`}>
-                <div className="flex items-start space-x-2">
-                  {message.sender === 'assistant' && (
-                    <div className="mt-1">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 mt-1">
+                    {message.sender === 'user' ? (
+                      <div className="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center">
+                        <User className="h-4 w-4 text-cyan-300" />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                        <Bot className="h-4 w-4 text-cyan-400" />
+                      </div>
+                    )}
+                  </div>
+                  {message.sender === 'assistant' && message.type && (
+                    <div className="mt-2">
                       {message.type === 'journey' && <MapPin className="h-4 w-4 text-cyan-400" />}
                       {message.type === 'process' && <FileText className="h-4 w-4 text-cyan-300" />}
                     </div>
@@ -263,18 +270,24 @@ export const ChatInterface = () => {
                 className="min-h-[60px] max-h-32 resize-none pr-16 bg-white/10 border-cyan-400/30 text-white placeholder:text-white/50 focus:border-cyan-300/60 focus:ring-cyan-400/20"
                 disabled={isLoading}
               />
+              {/* Voice Input Component */}
+              <VoiceInput 
+                onTranscript={handleVoiceInput}
+                isListening={isListening}
+                setIsListening={setIsListening}
+              />
               {/* Enhanced Voice Input Button */}
               <Button
                 variant="ghost"
                 size="icon"
-                className={`absolute right-2 top-2 w-12 h-12 ${
+                className={`absolute right-2 top-2 w-14 h-14 ${
                   isListening 
                     ? 'text-red-400 hover:bg-red-500/20 border border-red-400/40 cyan-glow' 
                     : 'text-cyan-400 hover:bg-cyan-500/20 border border-cyan-400/30'
                 } transition-all duration-300`}
                 onClick={() => setIsListening(!isListening)}
               >
-                {isListening ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+                {isListening ? <MicOff className="h-7 w-7" /> : <Mic className="h-7 w-7" />}
               </Button>
             </div>
             <Button 
