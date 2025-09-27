@@ -91,28 +91,28 @@ const Index = () => {
       {/* Dark overlay for better readability */}
       <div className="absolute inset-0 bg-black/60" />
       
-      {/* Glassmorphism header */}
-      <header className="relative z-10 glass border-b border-white/20">
+      {/* Navigation header */}
+      <header className="relative z-10 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center space-x-3">
             <img src={logo} alt="MyCity AI" className="w-10 h-10 rounded-lg shadow-lg" />
             <div>
-              <h1 className="text-xl font-bold text-white">
+              <h1 className="text-xl font-bold text-foreground">
                 MyCity AI Assistant
               </h1>
-              <p className="text-xs text-white/70">Pembantu Digital Warganegara Malaysia</p>
+              <p className="text-xs text-muted-foreground">Pembantu Digital Warganegara Malaysia</p>
             </div>
           </div>
           
           <div className="flex items-center space-x-4">
             {/* Weather Indicator */}
             {weather && (
-              <Card className="glass bg-white/10 border-cyan-400/30 p-2">
+              <Card className="bg-card border-border shadow-sm p-2">
                 <div className="flex items-center space-x-2">
                   {getWeatherIcon(weather.icon)}
                   <div className="text-xs">
-                    <p className="text-white font-medium">{weather.temperature}°C</p>
-                    <p className="text-cyan-300 text-[10px]">{weather.location}</p>
+                    <p className="text-foreground font-medium">{weather.temperature}°C</p>
+                    <p className="text-muted-foreground text-[10px]">{weather.location}</p>
                   </div>
                 </div>
               </Card>
@@ -122,7 +122,7 @@ const Index = () => {
               variant="ghost" 
               size="icon"
               onClick={() => navigate('/analytics')}
-              className="text-white hover:bg-white/20 border border-white/20"
+              className="text-foreground hover:bg-muted border border-border"
             >
               <BarChart3 className="h-5 w-5" />
             </Button>
@@ -131,7 +131,7 @@ const Index = () => {
               variant="ghost" 
               size="icon"
               onClick={() => setIsSettingsOpen(true)}
-              className="text-white hover:bg-white/20 border border-white/20"
+              className="text-foreground hover:bg-muted border border-border"
             >
               <Settings className="h-5 w-5" />
             </Button>
