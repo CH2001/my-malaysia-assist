@@ -70,7 +70,7 @@ const districtData = [
       'Lampu jalan gelap',
       'Kawasan sunyi malam',
       'CCTV tidak berfungsi',
-      'Patroli polis kurang'
+      'Patrol polis kurang'
     ]
   },
   { 
