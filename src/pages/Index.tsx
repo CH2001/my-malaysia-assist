@@ -93,21 +93,21 @@ const Index = () => {
       
       {/* Navigation header */}
       <header className="relative z-10 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center space-x-3">
-            <img src={logo} alt="MyCity AI" className="w-10 h-10 rounded-lg shadow-lg" />
-            <div>
-              <h1 className="text-xl font-bold text-foreground">
+        <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <img src={logo} alt="MyCity AI" className="w-8 h-8 md:w-10 md:h-10 rounded-lg shadow-lg" />
+            <div className="hidden sm:block">
+              <h1 className="text-lg md:text-xl font-bold text-foreground">
                 MyCity AI Assistant
               </h1>
-              <p className="text-xs text-muted-foreground">Pembantu Digital Warganegara Malaysia</p>
+              <p className="text-xs text-muted-foreground hidden md:block">Pembantu Digital Warganegara Malaysia</p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
             {/* Weather Indicator */}
             {weather && (
-              <Card className="bg-card border-border shadow-sm p-2">
+              <Card className="bg-card border-border shadow-sm p-2 hidden sm:block">
                 <div className="flex items-center space-x-2">
                   {getWeatherIcon(weather.icon)}
                   <div className="text-xs">
@@ -139,7 +139,7 @@ const Index = () => {
         </div>
       </header>
       
-      <div className="relative z-10 h-[calc(100vh-80px)]">
+      <div className="relative z-10 h-[calc(100vh-64px)] md:h-[calc(100vh-80px)]">
         <ChatInterface />
       </div>
       

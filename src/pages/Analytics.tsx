@@ -34,11 +34,71 @@ const trendingTopics = [
 ];
 
 const districtData = [
-  { id: 'cyberjaya-central', name: 'Cyberjaya Central', issues: 45, popular: 'Infrastruktur jalan' },
-  { id: 'cybersouth', name: 'Cybersouth', issues: 32, popular: 'Kebersihan kawasan' },
-  { id: 'cyberjaya-north', name: 'Cyberjaya North', issues: 28, popular: 'Keselamatan' },
-  { id: 'cyberjaya-west', name: 'Cyberjaya West', issues: 21, popular: 'Pengangkutan awam' },
-  { id: 'cyberjaya-east', name: 'Cyberjaya East', issues: 19, popular: 'Kemudahan awam' },
+  { 
+    id: 'cyberjaya-central', 
+    name: 'Cyberjaya Central', 
+    issues: 45, 
+    popular: 'Infrastruktur jalan',
+    topTrends: [
+      'Lubang jalan raya besar',
+      'Lampu jalan rosak',
+      'Penggunaan bot telegram',
+      'Kemudahan parking',
+      'Keselamatan malam hari'
+    ]
+  },
+  { 
+    id: 'cybersouth', 
+    name: 'Cybersouth', 
+    issues: 32, 
+    popular: 'Kebersihan kawasan',
+    topTrends: [
+      'Pengumpulan sampah lewat',
+      'Kawasan taman kotor',
+      'Longkang tersumbat',
+      'Masalah anjing liar',
+      'Vandalisme dinding'
+    ]
+  },
+  { 
+    id: 'cyberjaya-north', 
+    name: 'Cyberjaya North', 
+    issues: 28, 
+    popular: 'Keselamatan',
+    topTrends: [
+      'Pecah rumah berlaku',
+      'Lampu jalan gelap',
+      'Kawasan sunyi malam',
+      'CCTV tidak berfungsi',
+      'Patroli polis kurang'
+    ]
+  },
+  { 
+    id: 'cyberjaya-west', 
+    name: 'Cyberjaya West', 
+    issues: 21, 
+    popular: 'Pengangkutan awam',
+    topTrends: [
+      'Bas lewat tiba',
+      'Stesen LRT jauh',
+      'Tiada bas malam',
+      'Tambang Grab mahal',
+      'Parking kereta penuh'
+    ]
+  },
+  { 
+    id: 'cyberjaya-east', 
+    name: 'Cyberjaya East', 
+    issues: 19, 
+    popular: 'Kemudahan awam',
+    topTrends: [
+      'Tandas awam kotor',
+      'Tiada tempat duduk',
+      'Wifi awam lemah',
+      'ATM selalu rosak',
+      'Taman permainan rosak'
+    ]
+  },
 ];
 
 const Analytics = () => {
@@ -48,7 +108,7 @@ const Analytics = () => {
   const getDistrictColor = (issues: number) => {
     if (issues > 40) return 'hsl(var(--destructive))';
     if (issues > 25) return 'hsl(var(--primary))';
-    return 'hsl(var(--secondary))';
+    return 'hsl(210, 15%, 25%)'; // Darker grey for low issues
   };
 
   const hoveredData = hoveredDistrict ? districtData.find(d => d.id === hoveredDistrict) : null;
@@ -71,10 +131,10 @@ const Analytics = () => {
         </div>
       </header>
       
-      <div className="max-w-7xl mx-auto space-y-6 p-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6 p-4 md:p-6">
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <Card className="border-0 shadow-lg" style={{ background: 'var(--gradient-analytics-card)', backdropFilter: 'blur(10px)' }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-white">Jumlah Carian</CardTitle>
@@ -121,14 +181,14 @@ const Analytics = () => {
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* Monthly Trends */}
           <Card className="border-0 shadow-lg" style={{ background: 'var(--gradient-analytics-card)', backdropFilter: 'blur(10px)' }}>
             <CardHeader>
               <CardTitle className="text-white">Trend Bulanan</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.2)" />
                   <XAxis dataKey="month" stroke="#ffffff" />
@@ -155,7 +215,7 @@ const Analytics = () => {
               <CardTitle className="text-white">Kategori Carian & Aktiviti</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
                     data={searchCategoryData}
@@ -186,7 +246,7 @@ const Analytics = () => {
         </div>
 
         {/* Trending Topics and Map */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
           {/* Trending Topics */}
           <Card className="border-0 shadow-lg" style={{ background: 'var(--gradient-analytics-card)', backdropFilter: 'blur(10px)' }}>
             <CardHeader>
@@ -236,7 +296,7 @@ const Analytics = () => {
             </CardHeader>
             <CardContent>
               <div className="relative">
-                <svg viewBox="0 0 400 300" className="w-full h-64 border rounded-lg">
+                <svg viewBox="0 0 400 300" className="w-full h-48 md:h-64 border rounded-lg">
                   {/* Simplified Cyberjaya districts */}
                   <path
                     d="M50 50 L150 50 L150 120 L50 120 Z"
@@ -306,10 +366,23 @@ const Analytics = () => {
 
                 {/* Hover Details */}
                 {hoveredData && (
-                  <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-cyan-400/30">
-                    <h4 className="font-semibold text-white">{hoveredData.name}</h4>
-                    <p className="text-sm text-cyan-200">{hoveredData.issues} isu aktif</p>
-                    <p className="text-sm text-white">Isu popular: <span className="font-medium text-cyan-300">{hoveredData.popular}</span></p>
+                  <div className="absolute top-4 right-4 bg-black/90 backdrop-blur-sm p-4 rounded-lg shadow-xl border border-cyan-400/30 max-w-xs z-10">
+                    <h4 className="font-semibold text-white text-lg mb-2">{hoveredData.name}</h4>
+                    <p className="text-sm text-cyan-200 mb-2">{hoveredData.issues} isu aktif</p>
+                    <p className="text-sm text-white mb-3">Isu popular: <span className="font-medium text-cyan-300">{hoveredData.popular}</span></p>
+                    <div className="border-t border-cyan-400/20 pt-3">
+                      <h5 className="text-sm font-medium text-cyan-300 mb-2">Top 5 Trending:</h5>
+                      <ul className="space-y-1">
+                        {hoveredData.topTrends.map((trend, index) => (
+                          <li key={index} className="text-xs text-white flex items-center">
+                            <span className="w-4 h-4 rounded-full bg-cyan-500 text-black text-[10px] flex items-center justify-center mr-2 font-bold">
+                              {index + 1}
+                            </span>
+                            {trend}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 )}
 
@@ -324,7 +397,7 @@ const Analytics = () => {
                     <span>Sederhana (25-40)</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded" style={{ backgroundColor: 'hsl(var(--secondary))' }}></div>
+                    <div className="w-4 h-4 rounded" style={{ backgroundColor: 'hsl(210, 15%, 25%)' }}></div>
                     <span>Rendah (&lt;25)</span>
                   </div>
                 </div>
