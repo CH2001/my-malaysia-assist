@@ -455,7 +455,7 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
           </p>
           
           {/* Suggestion Buttons - Only show when no messages */}
-          {messages.length === 40 && (
+          {messages.length === 1 && (
             <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 max-w-4xl mx-auto px-4 relative z-10">
               <Button
                 variant="outline"
