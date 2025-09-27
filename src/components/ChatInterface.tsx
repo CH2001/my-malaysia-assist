@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, Send, Mic, MicOff, MapPin, FileText, Bot, User, Hospital, MapIcon, FileTextIcon, Cloud, Sun, CloudRain } from 'lucide-react';
+import { Settings, Send, Mic, MicOff, MapPin, FileText, Bot, User, Hospital, MapIcon, FileTextIcon } from 'lucide-react';
 import { SettingsModal } from './SettingsModal';
 import { VoiceInput } from './VoiceInput';
 import { SiriMascot } from './SiriMascot';
@@ -46,7 +46,6 @@ export const ChatInterface = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const [weather, setWeather] = useState<WeatherData | null>(null);
   const [callToActions, setCallToActions] = useState<CallToAction[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -58,46 +57,6 @@ export const ChatInterface = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  useEffect(() => {
-    fetchWeather();
-  }, []);
-
-  const fetchWeather = async () => {
-    try {
-      // Using OpenWeatherMap API for Malaysian weather (Kuala Lumpur)
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=Kuala%20Lumpur,MY&appid=your_api_key&units=metric`
-      );
-      
-      if (!response.ok) {
-        // Fallback mock data for demo
-        setWeather({
-          temperature: 28,
-          description: 'Partly Cloudy',
-          location: 'Kuala Lumpur',
-          icon: 'partly-cloudy'
-        });
-        return;
-      }
-      
-      const data = await response.json();
-      setWeather({
-        temperature: Math.round(data.main.temp),
-        description: data.weather[0].description,
-        location: data.name,
-        icon: data.weather[0].icon
-      });
-    } catch (error) {
-      // Fallback mock data
-      setWeather({
-        temperature: 28,
-        description: 'Partly Cloudy',
-        location: 'Kuala Lumpur',
-        icon: 'partly-cloudy'
-      });
-    }
-  };
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -287,37 +246,12 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
     }
   };
 
-  const getWeatherIcon = (iconCode: string) => {
-    if (iconCode.includes('rain') || iconCode.includes('drizzle')) {
-      return <CloudRain className="h-5 w-5 text-cyan-400" />;
-    } else if (iconCode.includes('cloud')) {
-      return <Cloud className="h-5 w-5 text-cyan-400" />;
-    } else {
-      return <Sun className="h-5 w-5 text-yellow-400" />;
-    }
-  };
-
   return (
     <div className="flex h-full relative">
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
-        {/* Siri Mascot, Welcome Message, and Weather at the top */}
+        {/* Siri Mascot, Welcome Message at the top */}
         <div className="flex-shrink-0 p-6 text-center border-b border-cyan-400/20">
-          {/* Weather Widget */}
-          {weather && (
-            <div className="mb-4">
-              <Card className="glass bg-white/10 border-cyan-400/30 p-3 max-w-sm mx-auto">
-                <div className="flex items-center justify-center space-x-3">
-                  {getWeatherIcon(weather.icon)}
-                  <div className="text-left">
-                    <p className="text-white font-medium">{weather.location}</p>
-                    <p className="text-cyan-300 text-sm">{weather.temperature}°C - {weather.description}</p>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          )}
-          
           <SiriMascot isActive={isLoading || isListening} size="large" />
           <p className="mt-4 text-white text-lg font-medium max-w-md mx-auto">
             Selamat datang ke MyCity AI Assistant
