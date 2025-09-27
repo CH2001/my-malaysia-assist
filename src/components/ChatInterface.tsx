@@ -168,28 +168,7 @@ export const ChatInterface = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-card">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-malaysia-blue to-primary flex items-center justify-center">
-            <span className="text-white font-bold text-lg">🇲🇾</span>
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">MyCity AI Assistant</h1>
-            <p className="text-sm text-muted-foreground">Pembantu Digital Warganegara Malaysia</p>
-          </div>
-        </div>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={() => setIsSettingsOpen(true)}
-          className="hover:bg-secondary"
-        >
-          <Settings className="h-5 w-5" />
-        </Button>
-      </div>
-
+    <div className="flex flex-col h-full bg-background">
       {/* Messages */}
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4 max-w-4xl mx-auto">
@@ -258,6 +237,16 @@ export const ChatInterface = () => {
       {/* Input Area */}
       <div className="p-4 border-t bg-card">
         <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-end mb-4">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setIsSettingsOpen(true)}
+              className="hover:bg-secondary"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
+          </div>
           <div className="flex space-x-2">
             <div className="flex-1 relative">
               <Textarea
