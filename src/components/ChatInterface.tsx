@@ -494,7 +494,6 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
             </Button>
           </div>
 
-          {/*
           {/* Suggestion Buttons - Only show when no messages */}
           {messages.length === 0 && (
             <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 max-w-4xl mx-auto px-4 relative z-10">
@@ -536,7 +535,6 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
               </Button>
             </div>
           )}
-          */}
         </div>
 
         {/* Messages */}
