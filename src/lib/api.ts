@@ -34,7 +34,7 @@ interface GovernmentService {
 
 // Configuration - Using Lambda API
 const LAMBDA_API_URL = 'https://gv4xpu0ks2.execute-api.us-east-1.amazonaws.com/chat';
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE_URL = 'http://localhost:8000';
 
 export class MyCityAPI {
   private apiKey: string;
