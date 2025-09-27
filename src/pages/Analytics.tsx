@@ -8,28 +8,28 @@ import { useNavigate } from 'react-router-dom';
 
 // Mock data for analytics
 const monthlyData = [
-  { month: 'Jan', complaints: 145, searches: 892 },
-  { month: 'Feb', complaints: 167, searches: 1024 },
-  { month: 'Mar', complaints: 189, searches: 1156 },
-  { month: 'Apr', complaints: 203, searches: 1289 },
-  { month: 'May', complaints: 178, searches: 1045 },
-  { month: 'Jun', complaints: 234, searches: 1378 },
+  { month: 'Jan', complaints: 145, searches: 892, trends: 234 },
+  { month: 'Feb', complaints: 167, searches: 1024, trends: 289 },
+  { month: 'Mar', complaints: 189, searches: 1156, trends: 312 },
+  { month: 'Apr', complaints: 203, searches: 1289, trends: 356 },
+  { month: 'May', complaints: 178, searches: 1045, trends: 298 },
+  { month: 'Jun', complaints: 234, searches: 1378, trends: 423 },
 ];
 
-const categoryData = [
-  { name: 'Infrastruktur', value: 34, color: 'hsl(var(--primary))' },
-  { name: 'Kebersihan', value: 28, color: 'hsl(var(--secondary))' },
-  { name: 'Keselamatan', value: 19, color: 'hsl(var(--accent))' },
-  { name: 'Pengangkutan', value: 12, color: 'hsl(var(--muted))' },
-  { name: 'Lain-lain', value: 7, color: 'hsl(var(--destructive))' },
+const searchCategoryData = [
+  { name: 'Carian Umum', value: 35, color: '#3B82F6' },
+  { name: 'Isu Trending', value: 28, color: '#06B6D4' },
+  { name: 'Aduan', value: 22, color: '#8B5CF6' },
+  { name: 'Perkhidmatan', value: 10, color: '#10B981' },
+  { name: 'Lain-lain', value: 5, color: '#F59E0B' },
 ];
 
 const trendingTopics = [
-  { topic: 'Lubang jalan raya', count: 89, trend: 'up', change: '+12%' },
-  { topic: 'Masalah lampu jalan', count: 67, trend: 'up', change: '+8%' },
-  { topic: 'Pengumpulan sampah', count: 54, trend: 'down', change: '-5%' },
-  { topic: 'Kemudahan awam', count: 43, trend: 'up', change: '+15%' },
-  { topic: 'Gangguan banjir', count: 32, trend: 'down', change: '-3%' },
+  { topic: 'Cara bayar cukai tanah online', count: 156, trend: 'up', change: '+24%', type: 'search' },
+  { topic: 'Lubang jalan raya Cyberjaya', count: 89, trend: 'up', change: '+12%', type: 'complaint' },
+  { topic: 'Permohonan lesen perniagaan', count: 78, trend: 'up', change: '+18%', type: 'search' },
+  { topic: 'Masalah lampu jalan Cybersouth', count: 67, trend: 'up', change: '+8%', type: 'issue' },
+  { topic: 'Jadual pengumpulan sampah', count: 54, trend: 'down', change: '-5%', type: 'search' },
 ];
 
 const districtData = [
@@ -53,7 +53,7 @@ const Analytics = () => {
   const hoveredData = hoveredDistrict ? districtData.find(d => d.id === hoveredDistrict) : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 p-6">
+    <div className="min-h-screen p-6" style={{ background: 'var(--gradient-analytics)' }}>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -68,47 +68,47 @@ const Analytics = () => {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="glass">
+          <Card className="border-0 shadow-lg" style={{ background: 'var(--gradient-analytics-card)', backdropFilter: 'blur(10px)' }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Jumlah Aduan</CardTitle>
-              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Jumlah Carian</CardTitle>
+              <Users className="h-4 w-4 text-cyan-300" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1,316</div>
-              <p className="text-xs text-muted-foreground">+12% dari bulan lalu</p>
+              <div className="text-2xl font-bold text-white">7,784</div>
+              <p className="text-xs text-cyan-200">+8% dari bulan lalu</p>
             </CardContent>
           </Card>
 
-          <Card className="glass">
+          <Card className="border-0 shadow-lg" style={{ background: 'var(--gradient-analytics-card)', backdropFilter: 'blur(10px)' }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Carian Aktif</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Aduan Aktif</CardTitle>
+              <MessageSquare className="h-4 w-4 text-cyan-300" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">7,784</div>
-              <p className="text-xs text-muted-foreground">+8% dari bulan lalu</p>
+              <div className="text-2xl font-bold text-white">1,316</div>
+              <p className="text-xs text-cyan-200">+12% dari bulan lalu</p>
             </CardContent>
           </Card>
 
-          <Card className="glass">
+          <Card className="border-0 shadow-lg" style={{ background: 'var(--gradient-analytics-card)', backdropFilter: 'blur(10px)' }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Isu Kritikal</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Isu Kritikal</CardTitle>
+              <AlertTriangle className="h-4 w-4 text-cyan-300" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">23</div>
-              <p className="text-xs text-muted-foreground">Memerlukan tindakan segera</p>
+              <div className="text-2xl font-bold text-white">23</div>
+              <p className="text-xs text-cyan-200">Memerlukan tindakan segera</p>
             </CardContent>
           </Card>
 
-          <Card className="glass">
+          <Card className="border-0 shadow-lg" style={{ background: 'var(--gradient-analytics-card)', backdropFilter: 'blur(10px)' }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Kadar Penyelesaian</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">Kadar Penyelesaian</CardTitle>
+              <TrendingUp className="h-4 w-4 text-cyan-300" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">87%</div>
-              <p className="text-xs text-muted-foreground">+3% dari bulan lalu</p>
+              <div className="text-2xl font-bold text-white">87%</div>
+              <p className="text-xs text-cyan-200">+3% dari bulan lalu</p>
             </CardContent>
           </Card>
         </div>
@@ -116,46 +116,62 @@ const Analytics = () => {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Monthly Trends */}
-          <Card className="glass">
+          <Card className="border-0 shadow-lg" style={{ background: 'var(--gradient-analytics-card)', backdropFilter: 'blur(10px)' }}>
             <CardHeader>
-              <CardTitle>Trend Bulanan</CardTitle>
+              <CardTitle className="text-white">Trend Bulanan</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="complaints" stroke="hsl(var(--primary))" name="Aduan" />
-                  <Line type="monotone" dataKey="searches" stroke="hsl(var(--secondary))" name="Carian" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.2)" />
+                  <XAxis dataKey="month" stroke="#ffffff" />
+                  <YAxis stroke="#ffffff" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(0,0,0,0.8)', 
+                      border: 'none', 
+                      borderRadius: '8px',
+                      color: '#ffffff'
+                    }}
+                  />
+                  <Line type="monotone" dataKey="searches" stroke="#06B6D4" strokeWidth={3} name="Carian" />
+                  <Line type="monotone" dataKey="complaints" stroke="#8B5CF6" strokeWidth={3} name="Aduan" />
+                  <Line type="monotone" dataKey="trends" stroke="#10B981" strokeWidth={3} name="Trending" />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
           {/* Category Distribution */}
-          <Card className="glass">
+          <Card className="border-0 shadow-lg" style={{ background: 'var(--gradient-analytics-card)', backdropFilter: 'blur(10px)' }}>
             <CardHeader>
-              <CardTitle>Kategori Aduan</CardTitle>
+              <CardTitle className="text-white">Kategori Carian & Aktiviti</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={categoryData}
+                    data={searchCategoryData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={100}
+                    labelLine={false}
+                    outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
-                    label={({ name, value }) => `${name}: ${value}%`}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                   >
-                    {categoryData.map((entry, index) => (
+                    {searchCategoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(0,0,0,0.8)', 
+                      border: 'none', 
+                      borderRadius: '8px',
+                      color: '#ffffff'
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
@@ -165,26 +181,38 @@ const Analytics = () => {
         {/* Trending Topics and Map */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Trending Topics */}
-          <Card className="glass">
+          <Card className="border-0 shadow-lg" style={{ background: 'var(--gradient-analytics-card)', backdropFilter: 'blur(10px)' }}>
             <CardHeader>
-              <CardTitle>Topik Trending</CardTitle>
+              <CardTitle className="text-white">Aktiviti Popular</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {trendingTopics.map((topic, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-3 bg-white/10 rounded-lg backdrop-blur-sm">
                     <div className="flex-1">
-                      <p className="font-medium">{topic.topic}</p>
-                      <p className="text-sm text-muted-foreground">{topic.count} aduan</p>
+                      <p className="font-medium text-white">{topic.topic}</p>
+                      <div className="flex items-center space-x-2">
+                        <p className="text-sm text-cyan-200">{topic.count} aktiviti</p>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${
+                            topic.type === 'search' ? 'bg-blue-500/20 text-blue-200 border-blue-400' :
+                            topic.type === 'complaint' ? 'bg-purple-500/20 text-purple-200 border-purple-400' :
+                            'bg-green-500/20 text-green-200 border-green-400'
+                          }`}
+                        >
+                          {topic.type === 'search' ? 'Carian' : topic.type === 'complaint' ? 'Aduan' : 'Isu'}
+                        </Badge>
+                      </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Badge variant={topic.trend === 'up' ? 'default' : 'secondary'}>
+                      <Badge variant={topic.trend === 'up' ? 'default' : 'secondary'} className="bg-cyan-500/20 text-cyan-200">
                         {topic.change}
                       </Badge>
                       {topic.trend === 'up' ? (
-                        <ArrowUp className="h-4 w-4 text-green-500" />
+                        <ArrowUp className="h-4 w-4 text-green-400" />
                       ) : (
-                        <ArrowDown className="h-4 w-4 text-red-500" />
+                        <ArrowDown className="h-4 w-4 text-red-400" />
                       )}
                     </div>
                   </div>
@@ -194,10 +222,10 @@ const Analytics = () => {
           </Card>
 
           {/* Cyberjaya District Map */}
-          <Card className="glass">
+          <Card className="border-0 shadow-lg" style={{ background: 'var(--gradient-analytics-card)', backdropFilter: 'blur(10px)' }}>
             <CardHeader>
-              <CardTitle>Peta Isu Mengikut Daerah</CardTitle>
-              <p className="text-sm text-muted-foreground">Hover pada daerah untuk maklumat lanjut</p>
+              <CardTitle className="text-white">Peta Isu Mengikut Daerah</CardTitle>
+              <p className="text-sm text-cyan-200">Hover pada daerah untuk maklumat lanjut</p>
             </CardHeader>
             <CardContent>
               <div className="relative">
@@ -271,25 +299,25 @@ const Analytics = () => {
 
                 {/* Hover Details */}
                 {hoveredData && (
-                  <div className="absolute top-4 right-4 bg-background/95 p-3 rounded-lg shadow-lg border">
-                    <h4 className="font-semibold">{hoveredData.name}</h4>
-                    <p className="text-sm text-muted-foreground">{hoveredData.issues} isu aktif</p>
-                    <p className="text-sm">Isu popular: <span className="font-medium">{hoveredData.popular}</span></p>
+                  <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-cyan-400/30">
+                    <h4 className="font-semibold text-white">{hoveredData.name}</h4>
+                    <p className="text-sm text-cyan-200">{hoveredData.issues} isu aktif</p>
+                    <p className="text-sm text-white">Isu popular: <span className="font-medium text-cyan-300">{hoveredData.popular}</span></p>
                   </div>
                 )}
 
                 {/* Legend */}
-                <div className="mt-4 flex items-center space-x-4 text-sm">
+                <div className="mt-4 flex items-center space-x-4 text-sm text-white">
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded bg-destructive"></div>
+                    <div className="w-4 h-4 rounded" style={{ backgroundColor: 'hsl(var(--destructive))' }}></div>
                     <span>Tinggi (40+)</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded bg-primary"></div>
+                    <div className="w-4 h-4 rounded" style={{ backgroundColor: 'hsl(var(--primary))' }}></div>
                     <span>Sederhana (25-40)</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded bg-secondary"></div>
+                    <div className="w-4 h-4 rounded" style={{ backgroundColor: 'hsl(var(--secondary))' }}></div>
                     <span>Rendah (&lt;25)</span>
                   </div>
                 </div>
