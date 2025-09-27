@@ -325,15 +325,58 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
                     )}
                     <div className="flex-1">
                       <div className="prose prose-sm max-w-none">
-                        {message.content.split('\n').map((line, index) => (
-                          <p key={index} className={`${
-                            message.sender === 'user' 
-                              ? 'text-white' 
-                              : 'text-white'
-                          } ${index === 0 ? 'mt-0' : ''}`}>
-                            {line}
-                          </p>
-                        ))}
+                        {message.content.split('\n').map((line, index) => {
+                          // Handle reference links specially
+                          if (line.includes('**Rujukan:**') || line.includes('**Rujukan**') || line.includes('**Reference:**')) {
+                            const linkMatch = line.match(/\[([^\]]+)\]\(([^)]+)\)/);
+                            if (linkMatch) {
+                              const [, linkText, linkUrl] = linkMatch;
+                              return (
+                                <Card key={index} className="mt-3 p-3 bg-cyan-500/10 border-cyan-400/40">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-cyan-300 font-medium text-sm">Rujukan:</span>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="text-xs bg-cyan-500/20 border-cyan-400/40 text-cyan-200 hover:bg-cyan-500/30"
+                                      onClick={() => window.open(linkUrl, '_blank')}
+                                    >
+                                      {linkText}
+                                    </Button>
+                                  </div>
+                                </Card>
+                              );
+                            }
+                          }
+                          
+                          // Handle bold text formatting
+                          const formatText = (text: string) => {
+                            const parts = text.split(/(\*\*[^*]+\*\*)/g);
+                            return parts.map((part, partIndex) => {
+                              if (part.startsWith('**') && part.endsWith('**')) {
+                                return (
+                                  <strong key={partIndex} className="font-bold text-cyan-300">
+                                    {part.slice(2, -2)}
+                                  </strong>
+                                );
+                              }
+                              return part;
+                            });
+                          };
+                          
+                          // Skip empty lines
+                          if (!line.trim()) return null;
+                          
+                          return (
+                            <p key={index} className={`${
+                              message.sender === 'user' 
+                                ? 'text-white' 
+                                : 'text-white'
+                            } ${index === 0 ? 'mt-0' : 'mt-1'}`}>
+                              {formatText(line)}
+                            </p>
+                          );
+                        })}
                       </div>
                       <p className={`text-xs mt-2 ${
                         message.sender === 'user' 
