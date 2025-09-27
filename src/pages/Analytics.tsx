@@ -5,6 +5,7 @@ import { TrendingUp, Users, MessageSquare, AlertTriangle, ArrowUp, ArrowDown } f
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import logo from "@/assets/mycity-logo.png";
 
 // Mock data for analytics
 const monthlyData = [
@@ -57,9 +58,12 @@ const Analytics = () => {
       {/* Navigation Header */}
       <header className="bg-background/95 backdrop-blur-sm border-b border-border px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Analytics Dashboard</h1>
-            <p className="text-muted-foreground">Analisis aduan dan carian warganegara Cyberjaya</p>
+          <div className="flex items-center space-x-4">
+            <img src={logo} alt="MyCity AI" className="w-10 h-10 rounded-lg shadow-lg" />
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Analytics Dashboard</h1>
+              <p className="text-muted-foreground">Analisis aduan dan carian warganegara Cyberjaya</p>
+            </div>
           </div>
           <Button variant="outline" onClick={() => navigate('/')}>
             Kembali ke Utama
