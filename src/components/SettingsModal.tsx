@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { Eye, EyeOff, Key, Save, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Key, Save, AlertCircle, Mic } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface SettingsModalProps {
@@ -21,13 +21,19 @@ interface SettingsModalProps {
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const [apiKey, setApiKey] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
+  const [speechApiKey, setSpeechApiKey] = useState('');
+  const [showSpeechApiKey, setShowSpeechApiKey] = useState(false);
   const [isLoading, setSaving] = useState(false);
 
   useEffect(() => {
-    // Load saved API key from localStorage
+    // Load saved API keys from localStorage
     const savedApiKey = localStorage.getItem('cerebras_api_key');
+    const savedSpeechApiKey = localStorage.getItem('openai_api_key');
     if (savedApiKey) {
       setApiKey(savedApiKey);
+    }
+    if (savedSpeechApiKey) {
+      setSpeechApiKey(savedSpeechApiKey);
     }
   }, [isOpen]);
 
@@ -35,20 +41,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     setSaving(true);
     
     try {
-      // Save API key to localStorage (in production, this should be encrypted)
+      // Save API keys to localStorage (in production, this should be encrypted)
       if (apiKey.trim()) {
         localStorage.setItem('cerebras_api_key', apiKey.trim());
-        toast({
-          title: "Berjaya!",
-          description: "Kunci API Cerebras telah disimpan.",
-        });
       } else {
         localStorage.removeItem('cerebras_api_key');
-        toast({
-          title: "Kunci API dipadam",
-          description: "Kunci API Cerebras telah dikeluarkan.",
-        });
       }
+
+      if (speechApiKey.trim()) {
+        localStorage.setItem('openai_api_key', speechApiKey.trim());
+      } else {
+        localStorage.removeItem('openai_api_key');
+      }
+      
+      toast({
+        title: "Berjaya!",
+        description: "Tetapan API telah disimpan.",
+      });
       
       setTimeout(() => {
         onClose();
@@ -102,7 +111,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* API Key Configuration */}
+          {/* Cerebras API Configuration */}
           <Card className="p-4 space-y-4">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 rounded bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
@@ -141,9 +150,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   )}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Kunci API anda akan disimpan secara tempatan dan digunakan untuk mengakses perkhidmatan AI.
-              </p>
             </div>
 
             <div className="flex space-x-2">
@@ -155,6 +161,51 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               >
                 Uji Sambungan
               </Button>
+            </div>
+          </Card>
+
+          {/* Speech-to-Text API Configuration */}
+          <Card className="p-4 space-y-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded bg-gradient-to-r from-green-500 to-teal-500 flex items-center justify-center">
+                <Mic className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold">OpenAI Speech API</h3>
+                <p className="text-sm text-muted-foreground">
+                  Kunci API untuk pengenalan suara (Whisper)
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="openai-api-key">Kunci API OpenAI</Label>
+              <div className="relative">
+                <Input
+                  id="openai-api-key"
+                  type={showSpeechApiKey ? "text" : "password"}
+                  value={speechApiKey}
+                  onChange={(e) => setSpeechApiKey(e.target.value)}
+                  placeholder="Masukkan kunci API OpenAI anda..."
+                  className="pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowSpeechApiKey(!showSpeechApiKey)}
+                >
+                  {showSpeechApiKey ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Digunakan untuk menukar suara kepada teks menggunakan model Whisper OpenAI.
+              </p>
             </div>
           </Card>
 
