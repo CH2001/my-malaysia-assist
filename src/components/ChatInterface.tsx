@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, Send, Mic, MicOff, MapPin, FileText, Bot, User } from 'lucide-react';
+import { Settings, Send, Mic, MicOff, MapPin, FileText, Bot, User, Hospital, MapIcon, FileTextIcon, Cloud, Sun, CloudRain } from 'lucide-react';
 import { SettingsModal } from './SettingsModal';
 import { VoiceInput } from './VoiceInput';
 import { SiriMascot } from './SiriMascot';
@@ -15,13 +15,30 @@ interface Message {
   sender: 'user' | 'assistant';
   timestamp: Date;
   type?: 'text' | 'journey' | 'process';
+  callToActions?: CallToAction[];
+}
+
+interface CallToAction {
+  id: string;
+  title: string;
+  description: string;
+  buttonText: string;
+  link: string;
+  icon?: string;
+}
+
+interface WeatherData {
+  temperature: number;
+  description: string;
+  location: string;
+  icon: string;
 }
 
 export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: 'Selamat datang ke MyCity AI Assistant! Saya boleh membantu anda dengan perkhidmatan kerajaan Malaysia, pelan perjalanan, dan soalan am mengenai khidmat awam. Bagaimana saya boleh membantu anda hari ini?',
+      content: 'Selamat datang ke MyCity AI Assistant! Sanya boleh membantu anda dengan perkhidmatan kerajaan Malaysia, pelan perjalanan, dan soalan am mengenai khidmat awam. Bagaimana saya boleh membantu anda hari ini?',
       sender: 'assistant',
       timestamp: new Date(),
     }
@@ -29,6 +46,8 @@ export const ChatInterface = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [callToActions, setCallToActions] = useState<CallToAction[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -39,6 +58,46 @@ export const ChatInterface = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    fetchWeather();
+  }, []);
+
+  const fetchWeather = async () => {
+    try {
+      // Using OpenWeatherMap API for Malaysian weather (Kuala Lumpur)
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=Kuala%20Lumpur,MY&appid=your_api_key&units=metric`
+      );
+      
+      if (!response.ok) {
+        // Fallback mock data for demo
+        setWeather({
+          temperature: 28,
+          description: 'Partly Cloudy',
+          location: 'Kuala Lumpur',
+          icon: 'partly-cloudy'
+        });
+        return;
+      }
+      
+      const data = await response.json();
+      setWeather({
+        temperature: Math.round(data.main.temp),
+        description: data.weather[0].description,
+        location: data.name,
+        icon: data.weather[0].icon
+      });
+    } catch (error) {
+      // Fallback mock data
+      setWeather({
+        temperature: 28,
+        description: 'Partly Cloudy',
+        location: 'Kuala Lumpur',
+        icon: 'partly-cloudy'
+      });
+    }
+  };
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -63,14 +122,18 @@ export const ChatInterface = () => {
         sender: 'assistant',
         timestamp: new Date(),
         type: response.type,
+        callToActions: response.callToActions,
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+      if (response.callToActions) {
+        setCallToActions(response.callToActions);
+      }
       setIsLoading(false);
     }, 1500);
   };
 
-  const generateResponse = (input: string): { content: string; type: 'text' | 'journey' | 'process' } => {
+  const generateResponse = (input: string): { content: string; type: 'text' | 'journey' | 'process'; callToActions?: CallToAction[] } => {
     const lowerInput = input.toLowerCase();
     
     if (lowerInput.includes('passport') || lowerInput.includes('pasport')) {
@@ -88,51 +151,103 @@ export const ChatInterface = () => {
 **Tempoh pemprosesan:** 3-5 hari bekerja
 
 **Rujukan:** [Portal Rasmi Jabatan Imigresen Malaysia](https://www.imi.gov.my)`,
-        type: 'process'
+        type: 'process',
+        callToActions: [
+          {
+            id: '1',
+            title: 'Borang Online',
+            description: 'Isi borang permohonan pasport online',
+            buttonText: 'Isi Borang',
+            link: 'https://www.imi.gov.my',
+            icon: 'FileText'
+          },
+          {
+            id: '2',
+            title: 'Cari Pejabat',
+            description: 'Cari pejabat Imigresen berdekatan',
+            buttonText: 'Cari Lokasi',
+            link: 'https://www.imi.gov.my/portal2017/index.php/ms/senarai-pejabat.html',
+            icon: 'MapPin'
+          }
+        ]
       };
     }
 
-    if (lowerInput.includes('mykad') || lowerInput.includes('ic') || lowerInput.includes('identity')) {
+    if (lowerInput.includes('hospital') || lowerInput.includes('kesihatan') || lowerInput.includes('klinik')) {
       return {
-        content: `**Proses Membaharui MyKad:**
+        content: `**Hospital dan Klinik Berdekatan:**
 
-**Langkah 1:** Kunjungi mana-mana pejabat Jabatan Pendaftaran Negara (JPN)
-**Langkah 2:** Isi borang JPN.KP02
-**Langkah 3:** Bayar yuran RM10
-**Langkah 4:** Serahkan dokumen:
-- MyKad lama/rosak
-- Sijil lahir (asal)
-- Gambar berukuran pasport (1 keping)
+Berikut adalah maklumat hospital awam dan klinik di Malaysia:
 
-**Tempoh pemprosesan:** 1 jam (selesai pada hari yang sama)
+**Hospital Kerajaan:**
+- Hospital Kuala Lumpur
+- Hospital Selayang
+- Hospital Sungai Buloh
+- Hospital Putrajaya
 
-**Rujukan:** [Portal JPN](https://www.jpn.gov.my)`,
-        type: 'process'
+**Klinik Kesihatan:**
+- Klinik Kesihatan tersedia di setiap daerah
+- Perkhidmatan 24 jam di hospital utama
+- Nombor kecemasan: 999
+
+**Rujukan:** [Portal MyHEALTH](https://myhealth.gov.my)`,
+        type: 'process',
+        callToActions: [
+          {
+            id: '3',
+            title: 'Cari Hospital',
+            description: 'Cari hospital terdekat dengan lokasi anda',
+            buttonText: 'Cari Hospital',
+            link: 'https://myhealth.gov.my/portal-myhealth/aplikasi-mobile/healthnow/',
+            icon: 'Hospital'
+          },
+          {
+            id: '4',
+            title: 'Kecemasan',
+            description: 'Nombor kecemasan dan maklumat penting',
+            buttonText: 'Hubungi 999',
+            link: 'tel:999',
+            icon: 'Phone'
+          }
+        ]
       };
     }
 
-    if (lowerInput.includes('kuala lumpur') || lowerInput.includes('kl') || lowerInput.includes('journey') || lowerInput.includes('travel')) {
+    if (lowerInput.includes('event') || lowerInput.includes('acara') || lowerInput.includes('festival')) {
       return {
-        content: `**Panduan Perjalanan ke Kuala Lumpur:**
+        content: `**Acara dan Festival di Malaysia:**
 
-**Dari KLIA/KLIA2:**
-1. Naik KLIA Ekspres ke KL Sentral (28 minit)
-2. Dari KL Sentral, sambung dengan:
-   - LRT/MRT ke destinasi akhir
-   - Grab/Taxi
-   - Bas RapidKL
+**Acara Terkini:**
+- Festival Musim Buah Durian (Jun - Ogos)
+- Malaysia International Fireworks Competition
+- George Town Festival
+- Rainforest World Music Festival
 
-**Dari Stesen Bas:**
-- TBS (Terminal Bersepadu Selatan): Naik LRT ke KL Sentral
-- Pudu Sentral: Naik LRT Kelana Jaya Line
+**Platform Acara:**
+- Eventbrite Malaysia
+- Facebook Events
+- Meetup Malaysia
 
-**Pilihan Transport Tempatan:**
-- Touch 'n Go untuk semua transport awam
-- MyRapid app untuk jadual bas & keretapi
-- Grab untuk perjalanan point-to-point
-
-**Rujukan:** [Prasarana Malaysia](https://www.prasarana.com.my)`,
-        type: 'journey'
+**Rujukan:** [Tourism Malaysia](https://www.malaysia.travel)`,
+        type: 'journey',
+        callToActions: [
+          {
+            id: '5',
+            title: 'Cari Acara',
+            description: 'Temui acara menarik di kawasan anda',
+            buttonText: 'Lihat Acara',
+            link: 'https://www.eventbrite.com/d/malaysia--kuala-lumpur/events/',
+            icon: 'Calendar'
+          },
+          {
+            id: '6',
+            title: 'Festival Guide',
+            description: 'Panduan lengkap festival di Malaysia',
+            buttonText: 'Panduan Festival',
+            link: 'https://www.malaysia.travel/explore/festivals-events',
+            icon: 'Music'
+          }
+        ]
       };
     }
 
@@ -155,6 +270,11 @@ export const ChatInterface = () => {
     };
   };
 
+  const handleSuggestionClick = (suggestion: string) => {
+    setInputValue(suggestion);
+    handleSendMessage();
+  };
+
   const handleVoiceInput = (transcript: string) => {
     setInputValue(transcript);
     textareaRef.current?.focus();
@@ -167,124 +287,223 @@ export const ChatInterface = () => {
     }
   };
 
-  return (
-    <div className="flex flex-col h-full relative">
-      {/* Siri Mascot and Welcome Message at the top */}
-      <div className="flex-shrink-0 p-6 text-center">
-        <SiriMascot isActive={isLoading || isListening} size="large" />
-        <p className="mt-4 text-white text-lg font-medium max-w-md mx-auto">
-          Selamat datang ke MyCity AI Assistant
-        </p>
-        <p className="mt-2 text-white/70 text-sm max-w-lg mx-auto">
-          Saya boleh membantu anda dengan perkhidmatan kerajaan Malaysia, pelan perjalanan, dan soalan am mengenai khidmat awam.
-        </p>
-      </div>
+  const getWeatherIcon = (iconCode: string) => {
+    if (iconCode.includes('rain') || iconCode.includes('drizzle')) {
+      return <CloudRain className="h-5 w-5 text-cyan-400" />;
+    } else if (iconCode.includes('cloud')) {
+      return <Cloud className="h-5 w-5 text-cyan-400" />;
+    } else {
+      return <Sun className="h-5 w-5 text-yellow-400" />;
+    }
+  };
 
-      {/* Messages */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4 max-w-4xl mx-auto">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <Card className={`max-w-[80%] p-4 glass border-cyan-400/30 ${
-                message.sender === 'user' 
-                  ? 'bg-gradient-to-r from-cyan-500/20 to-cyan-600/20 text-white border-cyan-300/40' 
-                  : 'bg-white/10 text-white border-white/20'
-              }`}>
-                <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 mt-1">
-                    {message.sender === 'user' ? (
-                      <div className="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center">
-                        <User className="h-4 w-4 text-cyan-300" />
-                      </div>
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
-                        <Bot className="h-4 w-4 text-cyan-400" />
-                      </div>
-                    )}
+  return (
+    <div className="flex h-full relative">
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Siri Mascot, Welcome Message, and Weather at the top */}
+        <div className="flex-shrink-0 p-6 text-center border-b border-cyan-400/20">
+          {/* Weather Widget */}
+          {weather && (
+            <div className="mb-4">
+              <Card className="glass bg-white/10 border-cyan-400/30 p-3 max-w-sm mx-auto">
+                <div className="flex items-center justify-center space-x-3">
+                  {getWeatherIcon(weather.icon)}
+                  <div className="text-left">
+                    <p className="text-white font-medium">{weather.location}</p>
+                    <p className="text-cyan-300 text-sm">{weather.temperature}°C - {weather.description}</p>
                   </div>
-                  {message.sender === 'assistant' && message.type && (
-                    <div className="mt-2">
-                      {message.type === 'journey' && <MapPin className="h-4 w-4 text-cyan-400" />}
-                      {message.type === 'process' && <FileText className="h-4 w-4 text-cyan-300" />}
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <div className="prose prose-sm max-w-none">
-                      {message.content.split('\n').map((line, index) => (
-                        <p key={index} className={`${
-                          message.sender === 'user' 
-                            ? 'text-white' 
-                            : 'text-white'
-                        } ${index === 0 ? 'mt-0' : ''}`}>
-                          {line}
-                        </p>
-                      ))}
-                    </div>
-                    <p className={`text-xs mt-2 ${
-                      message.sender === 'user' 
-                        ? 'text-white/70' 
-                        : 'text-white/60'
-                    }`}>
-                      {message.timestamp.toLocaleTimeString('ms-MY', { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <Card className="glass bg-white/10 p-4 border-cyan-400/20">
-                <div className="flex items-center space-x-2">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  </div>
-                  <span className="text-sm text-white/70">Sedang berfikir...</span>
                 </div>
               </Card>
             </div>
           )}
-          <div ref={messagesEndRef} />
-        </div>
-      </ScrollArea>
-
-      {/* Input Area with glassmorphism */}
-      <div className="p-4 glass border-t border-cyan-400/20">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex space-x-3 items-end">
-            <div className="flex-1 relative">
-              <Textarea
-                ref={textareaRef}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Tanya saya tentang perkhidmatan kerajaan atau panduan perjalanan..."
-                className="min-h-[60px] max-h-32 resize-none pr-16 bg-white/10 border-cyan-400/30 text-white placeholder:text-white/50 focus:border-cyan-300/60 focus:ring-cyan-400/20"
-                disabled={isLoading}
-              />
-              {/* Voice Input Component */}
-              <VoiceInput 
-                onTranscript={handleVoiceInput}
-                isListening={isListening}
-                setIsListening={setIsListening}
-              />
-            </div>
-            <Button 
-              onClick={handleSendMessage}
-              disabled={!inputValue.trim() || isLoading}
-              className="px-6 h-12 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 border border-cyan-400/40 text-white disabled:opacity-50 cyan-glow"
+          
+          <SiriMascot isActive={isLoading || isListening} size="large" />
+          <p className="mt-4 text-white text-lg font-medium max-w-md mx-auto">
+            Selamat datang ke MyCity AI Assistant
+          </p>
+          <p className="mt-2 text-white/70 text-sm max-w-lg mx-auto">
+            Saya boleh membantu anda dengan perkhidmatan kerajaan Malaysia, pelan perjalanan, dan soalan am mengenai khidmat awam.
+          </p>
+          
+          {/* Suggestion Buttons */}
+          <div className="mt-6 flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleSuggestionClick("Cari hospital terdekat")}
+              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300"
             >
-              <Send className="h-5 w-5" />
+              <Hospital className="h-4 w-4 mr-2" />
+              Cari Hospital
+            </Button>
+            <Button
+              variant="outline" 
+              size="sm"
+              onClick={() => handleSuggestionClick("Jalan ke KLCC dari KL Sentral")}
+              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300"
+            >
+              <MapIcon className="h-4 w-4 mr-2" />
+              Panduan Jalan
+            </Button>
+            <Button
+              variant="outline"
+              size="sm" 
+              onClick={() => handleSuggestionClick("Bagaimana nak renew pasport?")}
+              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300"
+            >
+              <FileTextIcon className="h-4 w-4 mr-2" />
+              Renew Dokumen
             </Button>
           </div>
+        </div>
+
+        {/* Messages */}
+        <ScrollArea className="flex-1 p-4">
+          <div className="space-y-4 max-w-4xl mx-auto">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <Card className={`max-w-[80%] p-4 glass border-cyan-400/30 ${
+                  message.sender === 'user' 
+                    ? 'bg-gradient-to-r from-cyan-500/20 to-cyan-600/20 text-white border-cyan-300/40' 
+                    : 'bg-white/10 text-white border-white/20'
+                }`}>
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      {message.sender === 'user' ? (
+                        <div className="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center">
+                          <User className="h-4 w-4 text-cyan-300" />
+                        </div>
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                          <Bot className="h-4 w-4 text-cyan-400" />
+                        </div>
+                      )}
+                    </div>
+                    {message.sender === 'assistant' && message.type && (
+                      <div className="mt-2">
+                        {message.type === 'journey' && <MapPin className="h-4 w-4 text-cyan-400" />}
+                        {message.type === 'process' && <FileText className="h-4 w-4 text-cyan-300" />}
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <div className="prose prose-sm max-w-none">
+                        {message.content.split('\n').map((line, index) => (
+                          <p key={index} className={`${
+                            message.sender === 'user' 
+                              ? 'text-white' 
+                              : 'text-white'
+                          } ${index === 0 ? 'mt-0' : ''}`}>
+                            {line}
+                          </p>
+                        ))}
+                      </div>
+                      <p className={`text-xs mt-2 ${
+                        message.sender === 'user' 
+                          ? 'text-white/70' 
+                          : 'text-white/60'
+                      }`}>
+                        {message.timestamp.toLocaleTimeString('ms-MY', { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <Card className="glass bg-white/10 p-4 border-cyan-400/20">
+                  <div className="flex items-center space-x-2">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                    <span className="text-sm text-white/70">Sedang berfikir...</span>
+                  </div>
+                </Card>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
+
+        {/* Input Area with glassmorphism */}
+        <div className="p-4 glass border-t border-cyan-400/20">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex space-x-3 items-end">
+              <div className="flex-1 relative">
+                <Textarea
+                  ref={textareaRef}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Tanya saya tentang perkhidmatan kerajaan atau panduan perjalanan..."
+                  className="min-h-[60px] max-h-32 resize-none pr-16 bg-white/10 border-cyan-400/30 text-white placeholder:text-white/50 focus:border-cyan-300/60 focus:ring-cyan-400/20"
+                  disabled={isLoading}
+                />
+                {/* Voice Input Component */}
+                <VoiceInput 
+                  onTranscript={handleVoiceInput}
+                  isListening={isListening}
+                  setIsListening={setIsListening}
+                />
+              </div>
+              <Button 
+                onClick={handleSendMessage}
+                disabled={!inputValue.trim() || isLoading}
+                className="px-6 h-12 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 border border-cyan-400/40 text-white disabled:opacity-50 cyan-glow"
+              >
+                <Send className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Call to Action Sidebar */}
+      <div className="w-80 border-l border-cyan-400/20 bg-black/20 backdrop-blur-sm">
+        <div className="p-4">
+          <h3 className="text-white font-semibold mb-4 flex items-center">
+            <FileText className="h-5 w-5 mr-2 text-cyan-400" />
+            Tindakan Disyorkan
+          </h3>
+          <ScrollArea className="h-[calc(100vh-200px)]">
+            <div className="space-y-3">
+              {callToActions.length > 0 ? (
+                callToActions.map((action) => (
+                  <Card key={action.id} className="glass bg-white/10 border-cyan-400/30 p-4 hover:bg-white/15 transition-all duration-300">
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="text-white font-medium text-sm">{action.title}</h4>
+                        <p className="text-white/70 text-xs mt-1">{action.description}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 border border-cyan-400/40 text-white text-xs"
+                        onClick={() => window.open(action.link, '_blank')}
+                      >
+                        {action.buttonText}
+                      </Button>
+                    </div>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <FileText className="h-12 w-12 text-white/30 mx-auto mb-3" />
+                  <p className="text-white/50 text-sm">
+                    Tindakan akan muncul di sini berdasarkan soalan anda
+                  </p>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
         </div>
       </div>
     </div>
