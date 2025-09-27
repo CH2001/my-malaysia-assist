@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { Settings, Send, Mic, MicOff, MapPin, FileText, Bot, User, Hospital, MapIcon, FileTextIcon } from 'lucide-react';
+import { MyCityAPI } from '@/lib/api';
 import { SettingsModal } from './SettingsModal';
 import { VoiceInput } from './VoiceInput';
 import { SiriMascot } from './SiriMascot';
@@ -69,12 +70,58 @@ export const ChatInterface = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputValue.trim();
     setInputValue('');
     setIsLoading(true);
 
-    // Simulate AI response with Malaysian government context
-    setTimeout(() => {
-      const response = generateResponse(userMessage.content);
+    try {
+      // Try Lambda API first
+      const apiKey = localStorage.getItem('cerebras_api_key');
+      if (apiKey) {
+        const api = new MyCityAPI(apiKey);
+        const response = await api.sendChatMessage(currentInput);
+        
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: response.answer,
+          sender: 'assistant',
+          timestamp: new Date(),
+          type: 'text',
+          callToActions: response.actions ? response.actions.map(action => ({
+            id: action.url,
+            title: action.label,
+            description: action.label,
+            buttonText: action.label,
+            link: action.url,
+            icon: action.subtype === 'map' ? 'MapPin' : 'FileText'
+          })) : undefined,
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+        if (assistantMessage.callToActions) {
+          setCallToActions(assistantMessage.callToActions);
+        }
+      } else {
+        // Fallback to local response generation
+        const response = generateResponse(currentInput);
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: response.content,
+          sender: 'assistant',
+          timestamp: new Date(),
+          type: response.type,
+          callToActions: response.callToActions,
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+        if (response.callToActions) {
+          setCallToActions(response.callToActions);
+        }
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      // Fallback to local response on error
+      const response = generateResponse(currentInput);
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: response.content,
@@ -88,12 +135,74 @@ export const ChatInterface = () => {
       if (response.callToActions) {
         setCallToActions(response.callToActions);
       }
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const generateResponse = (input: string): { content: string; type: 'text' | 'journey' | 'process'; callToActions?: CallToAction[] } => {
     const lowerInput = input.toLowerCase();
+    
+    // Handle KLCC to KL Sentral journey specifically
+    if (lowerInput.includes('klcc') && lowerInput.includes('kl sentral')) {
+      return {
+        content: `**Panduan Perjalanan: KLCC ke KL Sentral**
+
+**Laluan Terbaik: LRT Kelana Jaya Line**
+
+**Langkah 1:** Pergi ke Stesen LRT KLCC
+- Terletak di Tingkat Bawah KLCC
+- Masuk melalui Concourse Level Suria KLCC
+
+**Langkah 2:** Naik LRT Kelana Jaya Line
+- Arah: Gombak (Platform A)
+- Tempoh perjalanan: 3-4 minit
+- Jarak: 2 stesen sahaja
+
+**Langkah 3:** Transit di Stesen Masjid Jamek
+- Tukar ke LRT Ampang Line
+- Ikut papan tanda "KL Sentral"
+- Jalan kaki dalam stesen: 2-3 minit
+
+**Langkah 4:** Naik LRT Ampang Line
+- Arah: Sri Petaling
+- Berhenti di Stesen KL Sentral
+- Tempoh: 8-10 minit
+
+**Maklumat Tambahan:**
+- **Jumlah Masa:** 15-20 minit
+- **Kos:** RM 2.10 (MyRapid Card)
+- **Operasi:** 6:00 AM - 12:00 AM setiap hari
+- **Alternatif:** Grab/Taxi (15-25 minit, RM 15-25)`,
+        type: 'journey',
+        callToActions: [
+          {
+            id: 'klcc-map',
+            title: 'Peta LRT KLCC',
+            description: 'Lihat peta dan lokasi Stesen LRT KLCC',
+            buttonText: 'Lihat Peta',
+            link: 'https://www.google.com/maps/search/?api=1&query=LRT+KLCC+Station+Kuala+Lumpur',
+            icon: 'MapPin'
+          },
+          {
+            id: 'kl-sentral-map',
+            title: 'Peta KL Sentral',
+            description: 'Lihat peta dan fasiliti KL Sentral',
+            buttonText: 'KL Sentral',
+            link: 'https://www.google.com/maps/search/?api=1&query=KL+Sentral+Station+Kuala+Lumpur',
+            icon: 'MapPin'
+          },
+          {
+            id: 'myrapid-card',
+            title: 'MyRapid Card',
+            description: 'Maklumat kad MyRapid untuk transport awam',
+            buttonText: 'Info MyRapid',
+            link: 'https://myrapid.com.my/travel-with-us/how-to-travel/myrapid-card',
+            icon: 'CreditCard'
+          }
+        ]
+      };
+    }
     
     if (lowerInput.includes('passport') || lowerInput.includes('pasport')) {
       return {
@@ -229,14 +338,125 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
     };
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
+  const handleSuggestionClick = async (suggestion: string) => {
     setInputValue(suggestion);
-    handleSendMessage();
+    
+    // Auto-send suggestion to Lambda API if available
+    const apiKey = localStorage.getItem('cerebras_api_key');
+    if (apiKey) {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        content: suggestion,
+        sender: 'user',
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, userMessage]);
+      setInputValue('');
+      setIsLoading(true);
+
+      try {
+        const api = new MyCityAPI(apiKey);
+        const response = await api.sendChatMessage(suggestion);
+        
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: response.answer,
+          sender: 'assistant',
+          timestamp: new Date(),
+          type: 'text',
+          callToActions: response.actions ? response.actions.map(action => ({
+            id: action.url,
+            title: action.label,
+            description: action.label,
+            buttonText: action.label,
+            link: action.url,
+            icon: action.subtype === 'map' ? 'MapPin' : 'FileText'
+          })) : undefined,
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+        if (assistantMessage.callToActions) {
+          setCallToActions(assistantMessage.callToActions);
+        }
+      } catch (error) {
+        console.error('Error sending suggestion:', error);
+        // Fallback to local response
+        const response = generateResponse(suggestion);
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: response.content,
+          sender: 'assistant',
+          timestamp: new Date(),
+          type: response.type,
+          callToActions: response.callToActions,
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+        if (response.callToActions) {
+          setCallToActions(response.callToActions);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // No API key, use local response
+      handleSendMessage();
+    }
   };
 
-  const handleVoiceInput = (transcript: string) => {
+  const handleVoiceInput = async (transcript: string) => {
     setInputValue(transcript);
-    textareaRef.current?.focus();
+    
+    // Auto-send voice transcript to Lambda API if API key is available
+    const apiKey = localStorage.getItem('cerebras_api_key');
+    if (apiKey && transcript.trim()) {
+      try {
+        setIsLoading(true);
+        const api = new MyCityAPI(apiKey);
+        
+        const userMessage: Message = {
+          id: Date.now().toString(),
+          content: transcript.trim(),
+          sender: 'user',
+          timestamp: new Date(),
+        };
+
+        setMessages(prev => [...prev, userMessage]);
+        setInputValue('');
+        
+        const response = await api.sendChatMessage(transcript.trim());
+        
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: response.answer,
+          sender: 'assistant',
+          timestamp: new Date(),
+          type: 'text',
+          callToActions: response.actions ? response.actions.map(action => ({
+            id: action.url,
+            title: action.label,
+            description: action.label,
+            buttonText: action.label,
+            link: action.url,
+            icon: action.subtype === 'map' ? 'MapPin' : 'FileText'
+          })) : undefined,
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+        if (assistantMessage.callToActions) {
+          setCallToActions(assistantMessage.callToActions);
+        }
+      } catch (error) {
+        console.error('Error processing voice input:', error);
+        // Keep transcript in input field for manual send
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // If no API key, just put transcript in input field
+      textareaRef.current?.focus();
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

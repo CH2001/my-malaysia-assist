@@ -32,7 +32,8 @@ interface GovernmentService {
   online_link?: string;
 }
 
-// Configuration
+// Configuration - Using Lambda API
+const LAMBDA_API_URL = 'https://gv4xpu0ks2.execute-api.us-east-1.amazonaws.com/chat';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 export class MyCityAPI {
@@ -43,33 +44,84 @@ export class MyCityAPI {
   }
 
   /**
-   * Send chat message to AI assistant
+   * Send chat message to AI assistant using Lambda API
    */
   async sendChatMessage(
-    messages: ChatMessage[], 
-    userLocation?: { lat: number; lng: number }
-  ): Promise<ChatResponse> {
+    text: string,
+    sessionId: string = 'session-001'
+  ): Promise<any> {
     try {
-      const response = await fetch(`${API_BASE_URL}/chat`, {
+      const response = await fetch(LAMBDA_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages,
-          api_key: this.apiKey,
-          user_location: userLocation,
+          type: 'text',
+          session_id: sessionId,
+          text: text,
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`API request failed: ${response.statusText}`);
+        throw new Error(`Lambda API request failed: ${response.statusText}`);
       }
 
-      return await response.json();
+      const result = await response.json();
+      
+      // Parse the body field which contains the actual response
+      if (result.body) {
+        const parsedBody = JSON.parse(result.body);
+        return parsedBody;
+      }
+      
+      return result;
     } catch (error) {
-      console.error('Chat API error:', error);
-      throw new Error('Failed to send message. Please check your connection and API key.');
+      console.error('Lambda API error:', error);
+      throw new Error('Failed to send message to Lambda API.');
+    }
+  }
+
+  /**
+   * Send voice message to AI assistant using Lambda API
+   */
+  async sendVoiceMessage(
+    audioData: string,
+    filename: string,
+    language: string = 'ms',
+    sessionId: string = 'session-001'
+  ): Promise<any> {
+    try {
+      const response = await fetch(LAMBDA_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'audio_base64',
+          session_id: sessionId,
+          filename: filename,
+          language: language,
+          audio_data: audioData,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Lambda API request failed: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      
+      // Parse the body field which contains the actual response
+      if (result.body) {
+        const parsedBody = JSON.parse(result.body);
+        return parsedBody;
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Lambda Voice API error:', error);
+      throw new Error('Failed to send voice message to Lambda API.');
     }
   }
 
