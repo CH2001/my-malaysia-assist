@@ -2,8 +2,9 @@ import { ChatInterface } from '@/components/ChatInterface';
 import { SettingsModal } from '@/components/SettingsModal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Settings, Cloud, Sun, CloudRain } from 'lucide-react';
+import { Settings, Cloud, Sun, CloudRain, BarChart3 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from "@/assets/mycity-logo.png";
 import malaysiaSkyline from "@/assets/malaysia-skyline.jpg";
 
@@ -15,6 +16,7 @@ interface WeatherData {
 }
 
 const Index = () => {
+  const navigate = useNavigate();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [weather, setWeather] = useState<WeatherData | null>(null);
 
@@ -115,6 +117,15 @@ const Index = () => {
                 </div>
               </Card>
             )}
+            
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => navigate('/analytics')}
+              className="text-white hover:bg-white/20 border border-white/20"
+            >
+              <BarChart3 className="h-5 w-5" />
+            </Button>
             
             <Button 
               variant="ghost" 
