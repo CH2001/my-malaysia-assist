@@ -261,19 +261,19 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
     <Button
       type="button"
       variant="ghost"
-      size="sm"
-      className={`absolute right-2 top-2 h-8 w-8 p-0 ${
+      size="icon"
+      className={`absolute right-2 top-2 w-14 h-14 ${
         isListening 
-          ? 'text-destructive hover:text-destructive/80 bg-destructive/10 hover:bg-destructive/20' 
-          : 'text-muted-foreground hover:text-foreground'
-      }`}
+          ? 'text-red-400 hover:bg-red-500/20 border border-red-400/40 cyan-glow' 
+          : 'text-cyan-400 hover:bg-cyan-500/20 border border-cyan-400/30'
+      } transition-all duration-300`}
       onClick={toggleListening}
       title={isListening ? "Hentikan rakaman" : "Mula rakaman suara"}
     >
       {isListening ? (
-        <MicOff className="h-4 w-4" />
+        <MicOff className="h-7 w-7" />
       ) : (
-        <Mic className="h-4 w-4" />
+        <Mic className="h-7 w-7" />
       )}
     </Button>
   );

@@ -276,19 +276,6 @@ export const ChatInterface = () => {
                 isListening={isListening}
                 setIsListening={setIsListening}
               />
-              {/* Enhanced Voice Input Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`absolute right-2 top-2 w-14 h-14 ${
-                  isListening 
-                    ? 'text-red-400 hover:bg-red-500/20 border border-red-400/40 cyan-glow' 
-                    : 'text-cyan-400 hover:bg-cyan-500/20 border border-cyan-400/30'
-                } transition-all duration-300`}
-                onClick={() => setIsListening(!isListening)}
-              >
-                {isListening ? <MicOff className="h-7 w-7" /> : <Mic className="h-7 w-7" />}
-              </Button>
             </div>
             <Button 
               onClick={handleSendMessage}
