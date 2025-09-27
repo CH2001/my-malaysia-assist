@@ -332,18 +332,16 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
                             if (linkMatch) {
                               const [, linkText, linkUrl] = linkMatch;
                               return (
-                                <Card key={index} className="mt-3 mb-4 p-3 bg-cyan-500/10 border-cyan-400/40">
-                                  <div className="flex items-center justify-center">
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      className="text-xs bg-cyan-500/20 border-cyan-400/40 text-cyan-200 hover:bg-cyan-500/30"
-                                      onClick={() => window.open(linkUrl, '_blank')}
-                                    >
-                                      {linkText}
-                                    </Button>
-                                  </div>
-                                </Card>
+                                <div key={index} className="mt-3 mb-4 flex justify-end">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-xs bg-cyan-500/20 border-cyan-400/40 text-cyan-200 hover:bg-cyan-500/30"
+                                    onClick={() => window.open(linkUrl, '_blank')}
+                                  >
+                                    {linkText}
+                                  </Button>
+                                </div>
                               );
                             }
                           }
