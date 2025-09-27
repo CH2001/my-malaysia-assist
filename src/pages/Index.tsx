@@ -87,7 +87,7 @@ const Index = () => {
       />
       
       {/* Dark overlay for better readability */}
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-black/60" />
       
       {/* Glassmorphism header */}
       <header className="relative z-10 glass border-b border-white/20">
