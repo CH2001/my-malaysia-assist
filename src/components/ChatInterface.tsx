@@ -455,42 +455,42 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
           </p>
           
           {/* Suggestion Buttons */}
-          <div className="mt-6 flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
+          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 max-w-4xl mx-auto px-4">
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleSuggestionClick("Cari hospital terdekat")}
-              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300"
+              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300 text-xs md:text-sm"
             >
-              <Hospital className="h-4 w-4 mr-2" />
-              Cari Hospital
+              <Hospital className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+              <span className="truncate">Cari Hospital</span>
             </Button>
             <Button
               variant="outline" 
               size="sm"
               onClick={() => handleSuggestionClick("Jalan ke KLCC dari KL Sentral")}
-              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300"
+              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300 text-xs md:text-sm"
             >
-              <MapIcon className="h-4 w-4 mr-2" />
-              Panduan Jalan
+              <MapIcon className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+              <span className="truncate">Panduan Jalan</span>
             </Button>
             <Button
               variant="outline"
               size="sm" 
               onClick={() => handleSuggestionClick("Bagaimana nak renew pasport?")}
-              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300"
+              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300 text-xs md:text-sm"
             >
-              <FileTextIcon className="h-4 w-4 mr-2" />
-              Renew Dokumen
+              <FileTextIcon className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+              <span className="truncate">Renew Dokumen</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleSuggestionClick("What are the best cafes to work in Cyberjaya?")}
-              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300"
+              className="bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20 transition-all duration-300 text-xs md:text-sm"
             >
-              <Bot className="h-4 w-4 mr-2" />
-              Best Cyberjaya Cafe
+              <Bot className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+              <span className="truncate">Best Cyberjaya Cafe</span>
             </Button>
           </div>
         </div>
