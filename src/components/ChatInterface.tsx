@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { Settings, Send, Mic, MicOff, MapPin, FileText, Bot, User, Hospital, MapIcon, FileTextIcon } from 'lucide-react';
+import { Settings, Send, Mic, MicOff, MapPin, FileText, Bot, User, Hospital, MapIcon, FileTextIcon, Menu, X } from 'lucide-react';
 import { MyCityAPI } from '@/lib/api';
 import { SettingsModal } from './SettingsModal';
 import { VoiceInput } from './VoiceInput';
@@ -48,6 +48,7 @@ export const ChatInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [callToActions, setCallToActions] = useState<CallToAction[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -615,6 +616,15 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
         <div className="p-4 glass border-t border-cyan-400/20">
           <div className="max-w-4xl mx-auto">
             <div className="flex space-x-3 items-end">
+              {/* Mobile Sidebar Toggle */}
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="md:hidden h-12 bg-white/10 border-cyan-400/40 text-white hover:bg-cyan-500/20"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
               <div className="flex-1 relative">
                 <Textarea
                   ref={textareaRef}
@@ -644,13 +654,34 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
         </div>
       </div>
 
+      {/* Mobile backdrop overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40" 
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Call to Action Sidebar */}
-      <div className="w-80 xl:w-96 border-l border-cyan-400/20 bg-black/20 backdrop-blur-sm">
+      <div className={`${
+        isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
+      } md:translate-x-0 w-80 xl:w-96 border-l border-cyan-400/20 bg-black/20 backdrop-blur-sm fixed md:relative top-0 right-0 h-full z-50 transition-transform duration-300 ease-in-out md:block`}>
         <div className="p-4">
-          <h3 className="text-white font-semibold mb-4 flex items-center">
-            <FileText className="h-5 w-5 mr-2 text-cyan-400" />
-            Tindakan Disyorkan
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-white font-semibold flex items-center">
+              <FileText className="h-5 w-5 mr-2 text-cyan-400" />
+              Tindakan Disyorkan
+            </h3>
+            {/* Mobile Close Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSidebarOpen(false)}
+              className="md:hidden text-white hover:bg-white/10"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
           <ScrollArea className="h-[calc(100vh-200px)]">
             <div className="space-y-3">
               {callToActions.length > 0 ? (
@@ -664,7 +695,10 @@ Berikut adalah maklumat hospital awam dan klinik di Malaysia:
                       <Button
                         size="sm"
                         className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 border border-cyan-400/40 text-white text-xs px-2 py-2 break-words"
-                        onClick={() => window.open(action.link, '_blank')}
+                        onClick={() => {
+                          window.open(action.link, '_blank');
+                          setIsSidebarOpen(false); // Close mobile sidebar after action
+                        }}
                       >
                         <span className="break-words whitespace-normal text-center">{action.buttonText}</span>
                       </Button>
