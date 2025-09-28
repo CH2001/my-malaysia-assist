@@ -40,8 +40,10 @@ export class MyCityAPI {
   private apiKey: string;
 
   constructor(apiKey?: string) {
-    // Use hardcoded Cerebras API key
-    this.apiKey = apiKey || 'csk-2mjjejn5kn9nd443hc3xc4djccv45rxk9jt2phf5pjem2nyr';
+    // Default Cerebras API key - users can change this in Settings
+    const defaultApiKey = 'csk-2mjjejn5kn9nd443hc3xc4djccv45rxk9jt2phf5pjem2nyr';
+    const storedApiKey = localStorage.getItem('cerebras_api_key');
+    this.apiKey = apiKey || storedApiKey || defaultApiKey;
   }
 
   /**

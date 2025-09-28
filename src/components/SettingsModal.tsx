@@ -26,12 +26,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [isLoading, setSaving] = useState(false);
 
   useEffect(() => {
-    // Load saved API keys from localStorage
+    // Load saved API keys from localStorage or use defaults
+    const defaultCerebrasKey = 'csk-2mjjejn5kn9nd443hc3xc4djccv45rxk9jt2phf5pjem2nyr';
     const savedApiKey = localStorage.getItem('cerebras_api_key');
     const savedSpeechApiKey = localStorage.getItem('openai_api_key');
-    if (savedApiKey) {
-      setApiKey(savedApiKey);
-    }
+    
+    // Use saved key or default key
+    setApiKey(savedApiKey || defaultCerebrasKey);
+    
     if (savedSpeechApiKey) {
       setSpeechApiKey(savedSpeechApiKey);
     }
